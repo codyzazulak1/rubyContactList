@@ -30,6 +30,8 @@ class Application
         display(id)
         run
         #complete
+      when "value"
+        value
       when "delete"
         puts "\nsearch for a contacts id to" + " delete:\n".bold
         id = gets.chomp.to_i
@@ -53,6 +55,7 @@ class Application
     puts " new".bold + "      - Create a new contact"
     puts " list".bold + "     - List all contacts"
     puts " show".bold + "     - Display contact details"
+    puts " value".bold + "    - Display contacts by importance"
     puts " find".bold + "     - Seach for a contact"
     puts " delete".bold + "   - Delete a contact"
     puts " quit".bold + "     - Quits the program\n"
@@ -61,18 +64,23 @@ class Application
 
   def new_contact
     puts "\nCool, can you tell me your" + " full name".bold + "?\n"
+    puts "\n"
     name = gets.chomp
     first_name  = name.split(" ").first
     last_name   = name.split(" ").last
     puts "\n...and your" + " email".bold + "?\n"
+    puts "\n"
     email = gets.chomp
     if ( duplicate ( email ) )
       puts "\nError! Contact already exists!\n".red.bold
     else
-      puts "\nContact created!\n"
+      puts "\ngive this contact an importance value (1 to 5)\n"
+      puts "\n"
+      importance = gets.chomp.to_i
       # index = Contact.all.length + 1
-      contact = Contact.create(first_name: "#{first_name}", last_name: "#{last_name}", email: "#{email}" )
+      contact = Contact.create(first_name: "#{first_name}", last_name: "#{last_name}", email: "#{email}", importance: "#{importance}")
       # Contact.all.push(contact)
+      puts "\nContact created!\n"
     end
     run
     #complete
@@ -132,6 +140,14 @@ class Application
     run
     #complete
   end
+
+  def value
+    Contact.all.order(importance: :desc).each do |contact|
+      puts contact.to_s
+    end
+    run
+  end
+
 
   def index_of(name)
     Contact.all.each_with_index do |contact, index|

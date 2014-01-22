@@ -14,7 +14,7 @@ class Contact < ActiveRecord::Base
   
   def to_s
     # TODO: return string representation of Contact
-    "ID#:#{id.to_s} #{first_name.to_s} #{last_name.to_s} - #{email.to_s}"
+    "ID#:#{id.to_s} #{first_name.to_s} #{last_name.to_s} - #{email.to_s} - " + "#{importance.to_s}".bold
   end
   
 end
