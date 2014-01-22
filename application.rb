@@ -1,3 +1,9 @@
+require 'term/ansicolor'
+
+class String
+  include Term::ANSIColor
+end
+
 class Application
  
   def initialize
@@ -13,53 +19,77 @@ class Application
     case input
       when "new"
         new_contact
-        #complete
+        #in-progress
       when "list"
         list_all
         #complete
-      when "show :id"
-        puts "K3"
-        #insert display here
+      when "show"
+        puts "enter contacts ID number:"
+        id = gets.chomp.to_i
+        display(id)
+        run
+        #complete
       when "quit"
-        puts "Goodbye!"
+        puts "Fine! Goodbye!"
+        #complete
       else 
-        puts "Wrong answer! Try again, Biatch!"
+        puts "\n Wrong answer! Try again loser!".red.bold, "\n"
         run 
+        #complete
       end
   end
   
   # Prints the main menu only
   def show_main_menu
-    puts "Welcome to the app. What's next?"
-    puts " new      - Create a new contact"
-    puts " list     - List all contacts"
-    puts " show :id - Display contact details"
-    puts " quit     - Quits the program"
+    puts "Welcome to the app. What's next?".underscore
+    puts " new".bold + "      - Create a new contact"
+    puts " list".bold + "     - List all contacts"
+    puts " show".bold + "     - Display contact details"
+    puts " quit".bold + "     - Quits the program"
     print "> "
   end
 
   def new_contact
-    puts "Cool, can you tell me your full name?"
+    puts "Cool, can you tell me your" + " full name".bold + "?"
     name = gets.chomp
-    puts "...and your email?"
+    puts "...and your" + " email".bold + "?"
     email = gets.chomp
-    puts "Thanks, bro!"
-    contact = Contact.new(name, email)
-    @contacts.push(contact)
+#prevent if should go here
+  
+    if ( duplicate ( email ) )
+      puts "Error! Contact already exists!".red.bold
+
+    else
+      puts "Thanks, bro!"
+      index = @contacts.length + 1
+      contact = Contact.new(name, email, index)
+      @contacts.push(contact)
+    end
     run
-    #complete
+    #in-progress
+  end
+
+  def duplicate(email)
+    @contacts.each do |contact|
+      if email == contact.email
+        return true
+    end
+  end
+
+    false
   end
 
   def list_all
     @contacts.each do |contact|
       puts contact.to_s
     end
-    
     run
     #complete
   end
 
-  def display
+  def display(id)
+    puts @contacts[id - 1].to_s
+    #complete
   end
 
  
