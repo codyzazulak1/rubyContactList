@@ -19,7 +19,7 @@ class Application
     case input
       when "new"
         new_contact
-        #in-progress
+        #complete
       when "list"
         list_all
         #complete
@@ -29,6 +29,9 @@ class Application
         display(id)
         run
         #complete
+      when "find"
+        puts "search for a contacts" + " first name".bold + ":"
+        find
       when "quit"
         puts "Fine! Goodbye!"
         #complete
@@ -45,6 +48,7 @@ class Application
     puts " new".bold + "      - Create a new contact"
     puts " list".bold + "     - List all contacts"
     puts " show".bold + "     - Display contact details"
+    puts " find".bold + "     - Seach for a contact"
     puts " quit".bold + "     - Quits the program"
     print "> "
   end
@@ -54,11 +58,8 @@ class Application
     name = gets.chomp
     puts "...and your" + " email".bold + "?"
     email = gets.chomp
-#prevent if should go here
-  
     if ( duplicate ( email ) )
       puts "Error! Contact already exists!".red.bold
-
     else
       puts "Thanks, bro!"
       index = @contacts.length + 1
@@ -66,7 +67,7 @@ class Application
       @contacts.push(contact)
     end
     run
-    #in-progress
+    #complete
   end
 
   def duplicate(email)
@@ -75,7 +76,6 @@ class Application
         return true
     end
   end
-
     false
   end
 
@@ -92,5 +92,25 @@ class Application
     #complete
   end
 
- 
+  def find
+    name = gets.chomp
+    index = index_of(name)
+    if ( index )
+      puts @contacts[index].to_s 
+    else
+      puts "Error! Name doesn't exist!".red.bold
+    end
+    run
+    #complete
+  end
+
+  def index_of(name)
+    @contacts.each_with_index do |contact, index|
+      if name == contact.first_name
+        return index
+    end
+  end
+    false
+  end
+
 end
