@@ -7,10 +7,10 @@ end
 class Application
  
   def initialize
-    # Start with an empty array of contacts.
-    # TODO: Perhaps stub (seed) some contacts so we don't 
+    # Start with an empty array ofContact.all.
+    # TODO: Perhaps stub (seed) someContact.all so we don't 
     # have to create some every time we restart the app.
-    @contacts = []
+    # Contact.all = []
   end
  
   def run
@@ -24,19 +24,24 @@ class Application
         list_all
         #complete
       when "show"
-        puts "enter contacts ID number:"
+        puts "\nenter contacts ID number:\n"
+        puts "\n"
         id = gets.chomp.to_i
         display(id)
         run
         #complete
+      when "delete"
+        puts "\nsearch for a contacts id to" + " delete:\n".bold
+        id = gets.chomp.to_i
+        delete(id)
       when "find"
-        puts "search for a contacts" + " first name".bold + ":"
+        puts "\nsearch for a contacts" + " first name".bold + ":\n"
         find
       when "quit"
-        puts "Fine! Goodbye!"
+        puts "\nFine! Goodbye!\n"
         #complete
       else 
-        puts "\n Wrong answer! Try again loser!".red.bold, "\n"
+        puts "\n Invalid command, try again!".red.bold, "\n"
         run 
         #complete
       end
@@ -44,34 +49,37 @@ class Application
   
   # Prints the main menu only
   def show_main_menu
-    puts "Welcome to the app. What's next?".underscore
+    puts "\nWelcome to the app. What's next?"
     puts " new".bold + "      - Create a new contact"
     puts " list".bold + "     - List all contacts"
     puts " show".bold + "     - Display contact details"
     puts " find".bold + "     - Seach for a contact"
-    puts " quit".bold + "     - Quits the program"
-    print "> "
+    puts " delete".bold + "   - Delete a contact"
+    puts " quit".bold + "     - Quits the program\n"
+    print "\n> "
   end
 
   def new_contact
-    puts "Cool, can you tell me your" + " full name".bold + "?"
+    puts "\nCool, can you tell me your" + " full name".bold + "?\n"
     name = gets.chomp
-    puts "...and your" + " email".bold + "?"
+    first_name  = name.split(" ").first
+    last_name   = name.split(" ").last
+    puts "\n...and your" + " email".bold + "?\n"
     email = gets.chomp
     if ( duplicate ( email ) )
-      puts "Error! Contact already exists!".red.bold
+      puts "\nError! Contact already exists!\n".red.bold
     else
-      puts "Thanks, bro!"
-      index = @contacts.length + 1
-      contact = Contact.new(name, email, index)
-      @contacts.push(contact)
+      puts "\nContact created!\n"
+      # index = Contact.all.length + 1
+      contact = Contact.create(first_name: "#{first_name}", last_name: "#{last_name}", email: "#{email}" )
+      # Contact.all.push(contact)
     end
     run
     #complete
   end
 
   def duplicate(email)
-    @contacts.each do |contact|
+    Contact.all.each do |contact|
       if email == contact.email
         return true
     end
@@ -80,7 +88,7 @@ class Application
   end
 
   def list_all
-    @contacts.each do |contact|
+    Contact.all.each do |contact|
       puts contact.to_s
     end
     run
@@ -88,24 +96,45 @@ class Application
   end
 
   def display(id)
-    puts @contacts[id - 1].to_s
+    contact = Contact.find_by(id: "#{id}")
+    if ( contact )
+      puts "\n"
+      puts contact.to_s
+    else
+      puts "\nError! Contact doesn't exist!".red.bold
+    end
     #complete
   end
+
+  def delete(id)
+    puts "\nconfirm to delete contact: (y/n)\n".bold
+    puts Contact.find(id).to_s
+    puts "\n"
+    confirmation = gets.chomp.downcase
+
+    if confirmation == "y"
+      contact = Contact.find_by(id: "#{id}")
+      contact.destroy
+      puts "\nContact destroyed".red.bold
+    end
+    run
+  end
+
 
   def find
     name = gets.chomp
     index = index_of(name)
     if ( index )
-      puts @contacts[index].to_s 
+      puts Contact.all[index].to_s 
     else
-      puts "Error! Name doesn't exist!".red.bold
+      puts "\nError! Name doesn't exist!\n".red.bold
     end
     run
     #complete
   end
 
   def index_of(name)
-    @contacts.each_with_index do |contact, index|
+    Contact.all.each_with_index do |contact, index|
       if name == contact.first_name
         return index
     end
