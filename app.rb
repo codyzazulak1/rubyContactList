@@ -4,6 +4,7 @@ require './environments'
 require 'sinatra/flash'
 require 'sinatra/redirect_with_flash'
 require "rubygems"
+require 'sinatra/cookies'
 require_relative "contact"
 require_relative "database"
 
@@ -27,7 +28,17 @@ helpers do
   alias_method :h, :escape_html
 end
 
-# ------
+
+get "/contact/auth" do
+  erb :"contact/auth"
+end
+post "/contact/auth" do
+	response.set_cookie("owner_email", :value => params[:owner_email], :path => "/")
+	redirect "/"
+end
+
+
+#-------
 
 
 get "/contact/create" do
@@ -36,6 +47,7 @@ get "/contact/create" do
 end
 post "/contact" do
   @contact = Contact.new(params[:contact])
+  @contact.owner_email = cookies[:owner_email]
   if @contact.save
     redirect "/"
   else
@@ -43,13 +55,15 @@ post "/contact" do
   end	
 end
 
+# ---------
+
 get "/contact/:id" do
   @contact = Contact.find(params[:id])
   erb :"contact/view"
 end
 
 get "/" do
-  @contact = Contact.order("importance DESC")
+  @contact = Contact.order("importance DESC").where(owner_email: cookies[:owner_email])
   erb :"contact/index"
 end
 
@@ -64,6 +78,18 @@ post "/contact/:id" do
   redirect "/contact/#{@contact.id}"
 end
 
+
+
+# delete
+get "/contact/:id/delete" do
+  @contact = Contact.find(params[:id])
+  erb :"contact/delete"
+end
+post "/contact/:id/delete" do
+  @contact = Contact.find(params[:id])
+  @contact.delete
+  redirect "/"
+end
 
 
 
